@@ -1,13 +1,17 @@
 package serviceapp;
 
-
 import java.io.*;
 import java.lang.module.FindException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.TimeZone;
+
 
 public class ProcessCar{
     private String csvPath;
@@ -27,16 +31,12 @@ public class ProcessCar{
             String carFileName = carDetails[1].replaceAll(" ","")+".car";
             String carObjectPath = String.format("./serviceapp/work/%s/%s",carDetails[0].toLowerCase(),carFileName);
             String carDestination = String.format("./serviceapp/service-completed/%s",carFileName);
-
             Path tmp = Files.move(Paths.get(carObjectPath),Paths.get(carDestination));
-            System.out.println(tmp);
-
-            //get car object from disk
-            //run service method
-            //move file to service completed
-
+            //if temp is null no file was moved
         }catch (IOException ex){
             ex.printStackTrace();
+        }finally {
+            updateRecords();
         }
     }
 
@@ -70,7 +70,6 @@ public class ProcessCar{
     private void updateStatus(){
         Path statusFile = Paths.get("./serviceapp/status.txt");
         String data ="";
-//         writer;
 
         if(Files.exists(statusFile)){
             try {
@@ -99,5 +98,56 @@ public class ProcessCar{
 
 
         }
+    private void updateRecords(){
+        Path statusFile = Paths.get("./serviceapp/records.txt");
+        LocalDate today = LocalDate.now();
+        String data = "";
+        int lastDay = 0;
+        int lastWeek = 0;
+        int lastMonth = 0;
+
+        if(Files.exists(statusFile)){
+            try {
+                Files.delete(statusFile);
+
+            }catch (IOException ex){
+                ex.printStackTrace();
+            }
+        }
+            String directory = "./serviceapp/service-completed";
+            File[] carList = new File(directory).listFiles();
+        for (File carFile : carList){
+            LocalDate fileDate = LocalDate.ofInstant(Instant.ofEpochMilli(carFile.lastModified()), TimeZone.getDefault().toZoneId());
+            if(fileDate.minusDays(1).equals(today.minusDays(1))){
+                lastDay++;
+                continue;
+            }
+            if(fileDate.isAfter(today.minusDays(7))){
+                lastWeek++;
+                continue;
+            }
+
+            if(today.getMonthValue() -1 == fileDate.getMonthValue()){
+                lastMonth++;
+            }
+        }
+
+        data += String.format("Last day \t: %s \n",lastDay);
+        data += String.format("Last week \t: %s \n",lastWeek);
+        data += String.format("Last month \t: %s \n",lastMonth);
+
+
+        try {
+            FileWriter  writer = new FileWriter(statusFile.toString());
+            writer.write(data);
+            writer.flush();
+            writer.close();
+        }catch (IOException ex){
+            ex.printStackTrace();
+        }
+
+
     }
+
+}
 
