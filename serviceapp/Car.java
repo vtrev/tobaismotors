@@ -7,12 +7,12 @@ import java.io.Serializable;
 
 
 public class Car implements Serializable{
-    private String model;
+    private String make;
     private String registration;
     private String color;
 
-    public Car(String model,String reg ,String color){
-        this.model = model;
+    public Car(String make, String reg , String color){
+        this.make = make;
         this.registration = reg.replaceAll(" ","");
         this. color = color;
     }
@@ -23,9 +23,9 @@ public class Car implements Serializable{
 
 
     public String getMake(){
-        for(Make model: Make.values()){
-            if (this.model.toUpperCase().equals(model.toString())){
-                return this.model;
+        for(Make make: Make.values()){
+            if (this.make.toUpperCase().equals(make.toString())){
+                return this.make;
             }
         }
         return "Other";

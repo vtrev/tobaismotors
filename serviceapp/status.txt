@@ -1,0 +1,3 @@
+ford 		: 1 
+nissan 		: 0 
+toyota 		: 0 

@@ -6,6 +6,8 @@ import java.lang.module.FindException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProcessCar{
     private String csvPath;
@@ -23,12 +25,11 @@ public class ProcessCar{
 
             String[] carDetails = bufferedReader.readLine().split(",");
             String carFileName = carDetails[1].replaceAll(" ","")+".car";
-            String carObjectPath = String.format("./serviceapp/work/%s/%s",carDetails[0].trim(),carFileName);
+            String carObjectPath = String.format("./serviceapp/work/%s/%s",carDetails[0].toLowerCase(),carFileName);
             String carDestination = String.format("./serviceapp/service-completed/%s",carFileName);
 
             Path tmp = Files.move(Paths.get(carObjectPath),Paths.get(carDestination));
             System.out.println(tmp);
-            updateStatus();
 
             //get car object from disk
             //run service method
@@ -47,7 +48,7 @@ public class ProcessCar{
             bufferedReader = new BufferedReader(fileReader);
 
             String[] carDetails = bufferedReader.readLine().split(",");
-            Car car = new Car(carDetails[0],carDetails[1],carDetails[2]);
+            Car car = new Car(carDetails[0].toLowerCase(),carDetails[1],carDetails[2]);
 
             String outFilePath = String.format("./serviceapp/work/%s/%s.car",car.getMake(),car.getRegistration());
             ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(outFilePath));
@@ -59,22 +60,44 @@ public class ProcessCar{
             System.out.print("File...not found");
         }catch (Exception ioex){
             ioex.printStackTrace();
+        }finally {
+            updateStatus();
         }
 
 
     }
 
     private void updateStatus(){
+        Path statusFile = Paths.get("./serviceapp/status.txt");
+        String data ="";
+//         writer;
 
-        try{
+        if(Files.exists(statusFile)){
+            try {
+                Files.delete(statusFile);
 
-            File records = new File("./serviceapp/status.txt");
+            }catch (IOException ex){
+                ex.printStackTrace();
+            }
+        }
 
+        for (Make makeEnum: Make.values()){
+            String make = makeEnum.toString().toLowerCase();
+            String directory = String.format("./serviceapp/work/%s/",make);
+            File[] carList = new File(directory).listFiles();
+            data += String.format("%s \t\t: %s \n",make,carList.length);
+            }
 
+        try {
+            FileWriter  writer = new FileWriter(statusFile.toString());
+            writer.write(data);
+            writer.flush();
+            writer.close();
         }catch (IOException ex){
             ex.printStackTrace();
         }
+
+
+        }
     }
 
-
-}
