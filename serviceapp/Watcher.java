@@ -1,6 +1,5 @@
-package serviceapp.watcher;
+package serviceapp;
 
-import serviceapp.ProcessCar;
 import java.io.IOException;
 import java.nio.file.*;
 

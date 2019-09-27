@@ -5,23 +5,17 @@ import java.lang.module.FindException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.TimeZone;
 
 
 public class ProcessCar{
-    private String csvPath;
     private File carFile;
     private FileReader fileReader;
     private BufferedReader bufferedReader;
 
     public void moveCar(String csvPath){
-        System.out.println("Servicing car....");
-
         try{
             carFile = new File(csvPath);
             fileReader = new FileReader(carFile);
@@ -41,7 +35,6 @@ public class ProcessCar{
     }
 
     public void storeCar(String csvPath){
-        System.out.println("Storing car....@"+csvPath);
         try{
             carFile = new File(csvPath);
             fileReader = new FileReader(carFile);
@@ -55,16 +48,13 @@ public class ProcessCar{
             outputStream.writeObject(car);
             outputStream.close();
 
-
         }catch (FindException fex){
             System.out.print("File...not found");
-        }catch (Exception ioex){
-            ioex.printStackTrace();
+        }catch (IOException ex){
+            ex.printStackTrace();
         }finally {
             updateStatus();
         }
-
-
     }
 
     private void updateStatus(){
@@ -135,7 +125,6 @@ public class ProcessCar{
         data += String.format("Last day \t: %s \n",lastDay);
         data += String.format("Last week \t: %s \n",lastWeek);
         data += String.format("Last month \t: %s \n",lastMonth);
-
 
         try {
             FileWriter  writer = new FileWriter(statusFile.toString());
