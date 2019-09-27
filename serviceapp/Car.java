@@ -32,12 +32,9 @@ public class Car implements Serializable{
     }
 
     public void storeCar(){
-    System.out.println("Storing car....");
     try{
 
         String outFilePath = String.format("./serviceapp/work/%s/%s.car",getMake(),getRegistration());
-        System.out.println(outFilePath);
-//        File tmpCar file = new FileOutputStream("")
         ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(outFilePath));
         outputStream.writeObject(this);
         outputStream.close();
