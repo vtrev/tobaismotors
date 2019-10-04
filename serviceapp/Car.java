@@ -1,5 +1,6 @@
 package serviceapp;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.lang.module.FindException;
@@ -33,8 +34,8 @@ public class Car implements Serializable{
 
     public void storeCar(){
     try{
-
-        String outFilePath = String.format("./serviceapp/work/%s/%s.car",getMake(),getRegistration());
+        String separator = File.separator;
+        String outFilePath = String.format("."+ separator +"serviceapp"+ separator +"work"+ separator +"%s"+ separator +"%s.car",getMake(),getRegistration());
         ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(outFilePath));
         outputStream.writeObject(this);
         outputStream.close();

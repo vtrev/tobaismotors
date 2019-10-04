@@ -1,15 +1,19 @@
 package serviceapp;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
+
 
 public  class Watcher {
     private WatchService carWatchService;
     private WatchKey serviceWatchKey;
     private WatchKey doneWatchKey;
-    private Path serviceDirPath = Paths.get("./serviceapp/service/");
-    private Path doneDirPath =  Paths.get("./serviceapp/service/done/");
+    private String separator = File.separator;
+    private Path serviceDirPath = Paths.get("."+ separator +"serviceapp"+ separator +"service"+ separator);
+    private Path doneDirPath =  Paths.get("."+ separator +"serviceapp"+ separator +"service"+ separator +"done"+ separator);
     private ProcessCar processCar = new ProcessCar();
+
 
 
     public Watcher() {
@@ -37,11 +41,11 @@ public  class Watcher {
             while (true) {
 
         for (WatchEvent < ? > event : serviceWatchKey.pollEvents()) {
-            String csvPath = (serviceDirPath.toString()+"/"+ event.context()).trim();
+            String csvPath = (serviceDirPath.toString()+ separator + event.context()).trim();
             processCar.storeCar(csvPath);
         }
         for (WatchEvent < ? > event : doneWatchKey.pollEvents()) {
-            String csvPath = (doneDirPath.toString()+"/"+ event.context()).trim();
+            String csvPath = (doneDirPath.toString()+ separator + event.context()).trim();
             processCar.moveCar(csvPath);
         }
 
